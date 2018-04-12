@@ -1,0 +1,96 @@
+<!--BART TRIP PLANNER by DIPAL PATEL (W1233023)
+This routes.html file includes modern HTML symantec tags.
+It displays routes(legs) of train from source to destination and realtime train departure time.
+It calles /stations API to display source station information like name, address, city, zipcode in left sidebar.
+It displays countdown until next train leaves toward arrival station in minutes and seconds in right section.
+And app updates itself by re-loading the latest information from BART API every 30 seconds and displays refresh information..
+It displays Google route of train from source to destination.
+BONUS - used jquery counter to display remaining time until next train.-->
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Train Routes</title>
+      <meta charset="utf-8" />
+      <meta name="format-detection" content="telephone=no" />
+      <meta name="msapplication-tap-highlight" content="no" />
+      <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi"/>
+      <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *" />
+       <!-- reference to css file-->
+      <link rel="stylesheet" type="text/css" href="css/routes.css" />
+       <!-- All required libraries-->
+      <script type="text/javascript" src="cordova.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-timer/1.3.5/assets/js/angular-timer-all.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-timer/1.3.5/assets/js/angular-timer-bower.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.10/ngStorage.min.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-animate.js"></script>
+      <!-- Title of project-->
+      <script src="js/routes.js"></script>
+      <script type="text/javascript">
+        var app = {
+          initialize: function () { this.bindEvents(); },
+          bindEvents: function () {
+              document.addEventListener('deviceready', this.onDeviceReady, false);
+          },
+          onDeviceReady: function () {
+            //document.addEventListener(document).ready
+            angular.element(document).ready(function() {
+              angular.bootstrap(document, ['bart']);
+            });
+          }
+        };
+
+      </script>
+      <script type="text/javascript">
+      app.initialize();
+      </script>
+  </head>
+
+  <body  data-ng-controller="BartCtrl">
+    <div class="container">
+      <!-- div tag - to display station information and refreshed time information -->
+      <div class="myaside">
+        <div id="selectedFromstation">
+          <h2>TRAIN ROUTES</h2>
+            <h3>Source Information:</h3>
+          <address class="stationinfo">
+            {{ selectedFromStation.name }} <br>
+            {{ selectedFromStation.address }} <br>
+            {{ selectedFromStation.city }} <br>
+            {{ selectedFromStation.state }} {{ selectedFromStation.zipcode }} <br>
+          </address>
+        </div>
+      </div>
+      <div class = "refreshmsg"> <div> {{ refreshMessage }}</div></div>
+      <div>
+        <div id="trainTable" data-ng-if="trains.length" class="train-results">
+          <!-- Table to display route, departure time, arrival time and fare from source to destination station-->
+          <table>
+            <tr>
+              <th> Route </th>
+              <th> Departure </th>
+              <th> Arrival </th>
+              <th> Fare </th>
+            </tr>
+            <tr id="trainlegs" data-ng-repeat="train in trains">
+              <td> <span class="leg" data-ng-repeat="leg in train.legs"> {{ leg }} </span> </td>
+              <td> {{ train.scheduledDepartureTimeMin }} </td>
+              <td> {{ train.scheduledArrivalTime }} </td>
+              <td> {{ train.fare }} </td>
+            </tr>
+          </table>
+          <!-- Displaying real time departure time of train to destination station-->
+          <div>
+        <h3>Next train in:</h3>
+            <span class="regularlines"><timer end-time="nextTrainTime" max-time-unit="'minute'" font-family: Book Antiqua>{{minutes}} minutes, {{seconds}} seconds.</timer>
+              <div>.</div>
+            </span>
+          </div>
+          <!-- Displaying map -->
+          <h2>Map View</h2>
+          <iframe width="1200" height="600" style="border:0" data-ng-src="{{trustSrc(mapsLink)}}" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
